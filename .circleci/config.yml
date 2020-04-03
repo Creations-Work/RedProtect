@@ -3,14 +3,15 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
+      - image: circleci/golang:1.8
     working_directory: ~/build
     steps:
       - checkout
       - run:
           name: Compile and create Jars
           command: |
-            CIRCLE_BUILD_NUM = $(($CIRCLE_BUILD_NUM + 303))
-            echo $CIRCLE_BUILD_NUM;
+            BUILD_NUMBER = $(($CIRCLE_BUILD_NUM + 303))
+            echo $BUILD_NUMBER;
             mvn clean install
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
@@ -18,15 +19,8 @@ jobs:
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
-
-  publish-github-release:
-    docker:
-      - image: circleci/golang:1.8
-    steps:
-      - attach_workspace:
-          at: ~/build/dev/
       - run:
-          name: "Publish Release on GitHub"
+          name: Publish Release on GitHub
           command: |
             go get github.com/tcnksm/ghr
             VERSION=$(my-binary --version)
