@@ -18,7 +18,7 @@ jobs:
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
             rm ~/build/dev/*DONT-DOWNLOAD*
             FILE=find ~/build/dev -name "*.jar"
-            PROJECT_VERSION="${${FILE}%%-*}"
+            PROJECT_VERSION="${FILE%%-*}"
             echo ${PROJECT_VERSION}
       - store_artifacts:
           name: Dev Build
