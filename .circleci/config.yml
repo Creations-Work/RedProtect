@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
-    working_directory: ~/build
+    working_directory: ./build
     executor: github-release/default
     steps:
       - checkout
@@ -15,25 +15,25 @@ jobs:
             CIRCLE_BUILD_NUM=$(($CIRCLE_BUILD_NUM + 303))
             echo ${CIRCLE_BUILD_NUM}
             mvn clean install
-            mkdir ~/build/dev
-            cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
-            rm ~/build/dev/*DONT-DOWNLOAD*
-            FILE=$(find ~/build/dev/ -name "*.jar" -type f -printf "%f")
-            echo ${FILE%%-*}
-            PROJECT_VERSION=${FILE%%-*}
+            mkdir ./build/dev
+            cp ./build/RedProtect-Sponge-8/target/*.jar ./build/dev/
+            rm ./build/dev/*DONT-DOWNLOAD*
+            FILE=$(find ./build/dev/ -name "*.jar" -type f -printf "%f")
+            echo ${FILE%-*}
+            PROJECT_VERSION=${FILE%-*}
       - store_artifacts:
           name: Dev Build
-          path: ~/build/dev/
+          path: ./build/dev/
   publish-github-release:
     docker:
       - image: cibuilds/github:0.10
     steps:
       - attach_workspace:
-          at: ~/build/dev/
+          at: ./build/dev
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PROJECT_VERSION} /home/circleci/build/dev/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PROJECT_VERSION} ./build/dev/
 workflows:
   version: 2
   main:
