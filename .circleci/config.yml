@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: Compile and create Jars
+          command: |
+            mvn clean install
+            mkdir ~/build/dev
+            cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
+            rm ~/build/dev/*DONT-DOWNLOAD*
+      - store_artifacts:
+          name: Dev Build
+          path: ~/build/dev/
