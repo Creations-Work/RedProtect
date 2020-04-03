@@ -5,7 +5,6 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
-      - image: circleci/golang:1.8
     working_directory: ~/build
     executor: github-release/default
     steps:
@@ -25,8 +24,22 @@ jobs:
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: ~/build/dev/
       - run:
           name: "Publish Release on GitHub"
           command: |
             go get github.com/tcnksm/ghr
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PROJECT_VERSION} ~/build/dev/
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - publish-github-release:
+          requires:
+            - build
