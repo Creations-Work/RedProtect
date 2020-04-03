@@ -21,6 +21,7 @@ jobs:
             rm ~/build/dev/*DONT-DOWNLOAD*
             FILE=find -type f -printf "%f"
             echo f${FILE}
+            PROJECT_VERSION=${FILE%%%-*}
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
