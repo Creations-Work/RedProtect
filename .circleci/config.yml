@@ -13,6 +13,7 @@ jobs:
           name: Compile and create Jars
           command: |
             CIRCLE_BUILD_NUM=$(($CIRCLE_BUILD_NUM + 303))
+            echo ${CIRCLE_BUILD_NUM}
             mvn clean install
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
@@ -24,9 +25,3 @@ jobs:
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
-      - github-release/create:
-          tag: v${PROJECT_VERSION}
-          title: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
-          description: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
-          file-path: ~/build/dev/*
-          pre-release: true
