@@ -5,6 +5,7 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
+      - image: circleci/golang:1.8
     working_directory: ~/build
     executor: github-release/default
     steps:
@@ -18,7 +19,9 @@ jobs:
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
             rm ~/build/dev/*DONT-DOWNLOAD*
-            echo v${PROJECT_VERSION}
+            FILE=find /home/circleci/build/dev/ -name "*.jar" -printf "%f"
+            echo f${FILE}
+            PROJECT_VERSION=${FILE%%%-*}
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
@@ -26,5 +29,5 @@ jobs:
           tag: v${PROJECT_VERSION}
           title: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
           description: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
-          file-path: ~/build/dev/*
+          file-path: ~/build/dev/
           pre-release: true
