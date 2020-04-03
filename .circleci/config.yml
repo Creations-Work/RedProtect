@@ -14,7 +14,6 @@ jobs:
           command: |
             CIRCLE_BUILD_NUM=$(($CIRCLE_BUILD_NUM + 303))
             VERSION=$(my-binary --version)
-            echo $VERSION
             mvn clean install
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
