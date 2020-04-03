@@ -1,16 +1,20 @@
-version: 2
+version: 2.1
+orbs:
+  github-release: h-matsuo/github-release@0.1.1
 jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
     working_directory: ~/build
+    executor: github-release/default
     steps:
       - checkout
       - run:
           name: Compile and create Jars
           command: |
             CIRCLE_BUILD_NUM=$(($CIRCLE_BUILD_NUM + 303))
-            echo $CIRCLE_BUILD_NUM;
+            VERSION=$(my-binary --version)
+            echo $VERSION
             mvn clean install
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
@@ -18,23 +22,9 @@ jobs:
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
-  publish-github-release:
-    docker:
-      - image: circleci/golang:1.8
-    steps:
-      - attach_workspace:
-          at: ~/build/dev/
-      - run:
-          name: Publish Release on GitHub
-          command: |
-            go get github.com/tcnksm/ghr
-            VERSION=$(my-binary --version)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/build/dev/
-workflows:
-  version: 2
-  btd:
-    jobs:
-      - build
-      - publish-github-release:
-          requires:
-            - build
+      - github-release/create:
+          tag: v${VERSION}
+          title: ${CIRCLE_PROJECT_REPONAME} v${VERSION} build ${CIRCLE_BUILD_NUM}
+          description: ${CIRCLE_PROJECT_REPONAME} v${VERSION} build ${CIRCLE_BUILD_NUM}
+          file-path: ~/build/dev/
+          pre-release: true
