@@ -1,34 +1,34 @@
 version: 2
 jobs:
-  - build:
-      docker:
-        - image: circleci/openjdk:8-jdk-stretch
-      working_directory: ~/build
-      steps:
-        - checkout
-        - run:
-            name: Compile and create Jars
-            command: |
-              BUILD_NUMBER=$(($CIRCLE_BUILD_NUM + 303))
-              echo $BUILD_NUMBER;
-              mvn clean install
-              mkdir ~/build/dev
-              cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
-              rm ~/build/dev/*DONT-DOWNLOAD*
-        - store_artifacts:
-            name: Dev Build
-            path: ~/build/dev/
-  - publish-github-release:
-      requires:
-        - build
-      docker:
-        - image: circleci/golang:1.8
-      steps:
-        - attach_workspace:
-            at: ~/build/dev/
-        - run:
-            name: Publish Release on GitHub
-            command: |
-              go get github.com/tcnksm/ghr
-              VERSION=$(my-binary --version)
-              ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/build/dev/
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: Compile and create Jars
+          command: |
+            BUILD_NUMBER=$(($CIRCLE_BUILD_NUM + 303))
+            echo $BUILD_NUMBER;
+            mvn clean install
+            mkdir ~/build/dev
+            cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
+            rm ~/build/dev/*DONT-DOWNLOAD*
+      - store_artifacts:
+          name: Dev Build
+          path: ~/build/dev/
+  publish-github-release:
+    requires:
+      - build
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: ~/build/dev/
+      - run:
+          name: Publish Release on GitHub
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=$(my-binary --version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/build/dev/
