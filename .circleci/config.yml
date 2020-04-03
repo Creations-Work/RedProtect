@@ -19,9 +19,8 @@ jobs:
             mkdir ~/build/dev
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
             rm ~/build/dev/*DONT-DOWNLOAD*
-            FILE=find -name "*.jar" -printf "%f"
+            FILE=find -type f -printf "%f"
             echo f${FILE}
-            PROJECT_VERSION=${FILE%%%-*}
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
