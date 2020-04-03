@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
-      - image: circleci/golang:1.8
     working_directory: ~/build
     steps:
       - checkout
@@ -19,6 +18,13 @@ jobs:
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
+
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: ~/build/dev/
       - run:
           name: Publish Release on GitHub
           command: |
