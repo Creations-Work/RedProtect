@@ -19,8 +19,6 @@ jobs:
           name: Dev Build
           path: ~/build/dev/
   publish-github-release:
-    requires:
-      - build
     docker:
       - image: circleci/golang:1.8
     steps:
@@ -32,3 +30,11 @@ jobs:
             go get github.com/tcnksm/ghr
             VERSION=$(my-binary --version)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/build/dev/
+workflows:
+  version: 2
+  btd:
+    jobs:
+      - build
+      - publish-github-release:
+          requires:
+            - build
