@@ -20,14 +20,13 @@ jobs:
             cp ~/build/RedProtect-Sponge-8/target/*.jar ~/build/dev/
             rm ~/build/dev/*DONT-DOWNLOAD*
             FILE=$(find ~/build/dev/ -name "*.jar" -type f -printf "%f")
-            echo f${FILE}
+            echo f${FILE%%%-*}
             PROJECT_VERSION=${FILE%%%-*}
       - store_artifacts:
           name: Dev Build
           path: ~/build/dev/
-      - github-release/create:
-          tag: v${PROJECT_VERSION}
-          title: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
-          description: ${CIRCLE_PROJECT_REPONAME} v${PROJECT_VERSION} build ${CIRCLE_BUILD_NUM}
-          file-path: ~/build/dev/
-          pre-release: true
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PROJECT_VERSION} ~/build/dev/
