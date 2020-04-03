@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Compile and create Jars
           command: |
-            BUILD_NUMBER = $(($CIRCLE_BUILD_NUM + 303))
+            BUILD_NUMBER=$(($CIRCLE_BUILD_NUM + 303))
             echo $BUILD_NUMBER;
             mvn clean install
             mkdir ~/build/dev
